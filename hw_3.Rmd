@@ -21,6 +21,30 @@ fpl <- jsonlite::read_json(...)
 ...
 ```
 
+library(tidyverse)
+library (ggplot2)
+got_graf <- jsonlite::read_json("https://raw.githubusercontent.com/r-classes/2019_2020_ds4dh_hw3_purr_gutenbergr_tidytext_udpipe/master/data/fpl_data_2018_2019.json")
+got_graf%>%
+tibble(goli = map_chr(., "Goals"),
+       clubi = map_chr(., "Club"))%>%
+mutate(golichisla = as.integer(goli))%>%
+within(rm(., goli))-> gotovie 
+gotovie
+got_graf%>%
+map("name") %>% 
+  enframe() %>%     
+within(rm(value))-> gotovieimenaigrokov 
+gotovie %>%
+bind_cols(gotovieimenaigrokov)%>%
+arrange(desc(golichisla))%>%
+slice(1:30)%>%
+ggplot(aes(fct_reorder(name, golichisla), golichisla,fill = clubi))+
+geom_col()+
+coord_flip()+
+labs(x = "", y = "",title ="Numbers of goals",
+     caption = "data from www.premierleague.com")
+
+
 ## Задание 3.2
 Скачайте из проекта gutenberg.org текст "Женское международное движение: Сборник статей". Используя список русских стопслов (папка `data`, файл `stopwords_ru.csv`), уберите из текста служебные слова, посчитайте и визуализируйте 20 самых частостных слов текста.
 
