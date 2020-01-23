@@ -4,12 +4,38 @@ author: "..."
 output: html_document
 ---
 
-```{r, message=FALSE}
+```{r}
 library(tidyverse)
 library(tidytext)
 library(gutenbergr)
 library(udpipe)
+
+
+library(tidyverse)
+library (ggplot2)
+got_graf <- jsonlite::read_json("https://raw.githubusercontent.com/r-classes/2019_2020_ds4dh_hw3_purr_gutenbergr_tidytext_udpipe/master/data/fpl_data_2018_2019.json")
+got_graf%>%
+tibble(goli = map_chr(., "Goals"),
+       clubi = map_chr(., "Club"))%>%
+mutate(golichisla = as.integer(goli))%>%
+within(rm(., goli))-> gotovie 
+gotovie
+got_graf%>%
+map("name") %>% 
+  enframe() %>%     
+within(rm(value))-> gotovieimenaigrokov 
+gotovie %>%
+bind_cols(gotovieimenaigrokov)%>%
+arrange(desc(golichisla))%>%
+slice(1:30)%>%
+ggplot(aes(fct_reorder(name, golichisla), golichisla,fill = clubi))+
+geom_col()+
+coord_flip()+
+labs(x = "", y = "",title ="Numbers of goals",
+     caption = "data from www.premierleague.com")
 ```
+
+
 
 ## Задание 3.1
 
